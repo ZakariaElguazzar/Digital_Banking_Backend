@@ -26,7 +26,7 @@ public abstract class BankAccount {
     private String currency;
     @ManyToOne
     private Customer customer;
-    @OneToMany(mappedBy = "bankAccount", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "bankAccount", cascade = CascadeType.ALL ,fetch=FetchType.LAZY)
     private List<Operation> operations;
 
 }
