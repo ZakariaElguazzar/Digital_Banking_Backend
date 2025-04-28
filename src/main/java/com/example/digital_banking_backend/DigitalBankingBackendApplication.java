@@ -1,9 +1,6 @@
 package com.example.digital_banking_backend;
 
-import com.example.digital_banking_backend.Entities.BankAccount;
-import com.example.digital_banking_backend.Entities.Customer;
-import com.example.digital_banking_backend.Entities.Operation;
-import com.example.digital_banking_backend.Entities.SavingAccount;
+import com.example.digital_banking_backend.Entities.*;
 import com.example.digital_banking_backend.Enums.accStatus;
 import com.example.digital_banking_backend.Repositories.BankAccountRepository;
 import com.example.digital_banking_backend.Repositories.CustomerRepository;
@@ -42,6 +39,26 @@ public class DigitalBankingBackendApplication {
             operation.setType(com.example.digital_banking_backend.Enums.OperationType.CREDIT);
             operation.setBankAccount(bankAccount1);
             operationRepository.save(operation);
+
+
+            Customer customerS = new Customer();
+            customerS.setName("John Doe");
+            customerS.setEmail("doe@gmail.com");
+            Customer Customer1S = customerRepository.save(customerS);
+            CurrentAccount bankAccountS = new CurrentAccount();
+            bankAccountS.setCustomer(Customer1S);
+            bankAccountS.setBalance(1000.0);
+            bankAccountS.setCreatedAt(new java.util.Date());
+            bankAccountS.setStatus(accStatus.ACTIVATED);
+            bankAccountS.setCurrency("USD");
+            bankAccountS.setOverDraft(0.0523);
+            BankAccount bankAccount1S=bankAccountRepository.save(bankAccountS);
+            Operation operationS = new Operation();
+            operationS.setDate(new java.util.Date());
+            operationS.setAmount(1000.0);
+            operationS.setType(com.example.digital_banking_backend.Enums.OperationType.CREDIT);
+            operationS.setBankAccount(bankAccount1S);
+            operationRepository.save(operationS);
 
         };
 

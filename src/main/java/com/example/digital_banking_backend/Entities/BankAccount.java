@@ -8,19 +8,20 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.List;
-
+//@MappedSuperclass
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "account_type",length = 4, discriminatorType = DiscriminatorType.STRING)
-public class BankAccount {
+public abstract class BankAccount {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String Id;
     private Date createdAt;
     private double balance;
+    @Enumerated(EnumType.STRING)
     private accStatus status;
     private String currency;
     @ManyToOne
