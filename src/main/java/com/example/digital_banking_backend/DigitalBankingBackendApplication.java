@@ -1,13 +1,20 @@
 package com.example.digital_banking_backend;
 
+import com.example.digital_banking_backend.DTOs.CustomerDTO;
 import com.example.digital_banking_backend.Entities.*;
+import com.example.digital_banking_backend.Exceptions.CustomerNotFoundException;
 import com.example.digital_banking_backend.Repositories.BankAccountRepository;
 import com.example.digital_banking_backend.Repositories.CustomerRepository;
 import com.example.digital_banking_backend.Repositories.OperationRepository;
+import com.example.digital_banking_backend.Services.BankAccountService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Stream;
 
 @SpringBootApplication
 public class DigitalBankingBackendApplication {
@@ -16,10 +23,10 @@ public class DigitalBankingBackendApplication {
         SpringApplication.run(DigitalBankingBackendApplication.class, args);
     }
 
-    @Bean
-    CommandLineRunner commandLineRunner(CustomerRepository customerRepository, BankAccountRepository bankAccountRepository, OperationRepository operationRepository) {
-        return args -> {
-            // Create a new customer and save it to the database
+    //@Bean
+    //CommandLineRunner commandLineRunner(CustomerRepository customerRepository, BankAccountRepository bankAccountRepository, OperationRepository operationRepository) {
+    //return args -> {
+    // Create a new customer and save it to the database
 //            Customer customer = new Customer();
 //            customer.setName("John Doe");
 //            customer.setEmail("john@gmail.com");
@@ -60,30 +67,66 @@ public class DigitalBankingBackendApplication {
 //            operationRepository.save(operationS);
 
 
-            BankAccount bankaccount2 = bankAccountRepository.findById("3931e218-2bd5-42d9-9d71-92b8f7dc9e14").orElse(null);
-            if ( bankaccount2 !=null)
-            {
-                System.out.println("****************************");
-                System.out.println(bankaccount2.getCreatedAt());
-                System.out.println(bankaccount2.getCustomer().getName());
-                System.out.println(bankaccount2.getCustomer().getEmail());
-                System.out.println(bankaccount2.getCurrency());
-                System.out.println(bankaccount2.getStatus());
-                System.out.println(bankaccount2.getClass().getSimpleName());
+    //BankAccount bankaccount2 = bankAccountRepository.findById("3931e218-2bd5-42d9-9d71-92b8f7dc9e14").orElse(null);
+    //if ( bankaccount2 !=null)
+    //{
+    //System.out.println("****************************");
+    //System.out.println(bankaccount2.getCreatedAt());
+    //System.out.println(bankaccount2.getCustomer().getName());
+    //System.out.println(bankaccount2.getCustomer().getEmail());
+    //System.out.println(bankaccount2.getCurrency());
+    //System.out.println(bankaccount2.getStatus());
+    //System.out.println(bankaccount2.getClass().getSimpleName());
 
-                if(bankaccount2 instanceof SavingAccount){
-                    System.out.println("Interest Rate");
-                    System.out.println(((SavingAccount) bankaccount2).getInterestRate());
+//                if(bankaccount2 instanceof SavingAccount){
+//                    System.out.println("Interest Rate");
+//                    System.out.println(((SavingAccount) bankaccount2).getInterestRate());
+//                }
+//                if(bankaccount2 instanceof CurrentAccount){
+//                    System.out.println("OverDraft");
+//                    System.out.println(((CurrentAccount) bankaccount2).getOverDraft());
+//                }
+    //System.out.println("****************************");
+    //}
+
+    //};
+
+    //}
+
+    //@Bean
+    CommandLineRunner commandLineRunner(BankAccountService bankAccountService) {
+        return args -> {
+            Stream.of("Ayoub", "Hiba", "Soukaina","Noura","Zakaria").forEach(name -> {
+                CustomerDTO customer = new CustomerDTO();
+                customer.setName(name);
+                Random rand = new Random();
+                int randomNum = rand.nextInt(20000);
+                String[] domains = {"gmail.com", "yahoo.com", "outlook.com", "protonmail.com","hotmail.com"};
+                String randomDomain = domains[rand.nextInt(domains.length)];
+                String email = name.toLowerCase().replaceAll("\\s+", "") + randomNum + "@" + randomDomain;
+                customer.setEmail(email);
+                bankAccountService.saveCustomer(customer);
+            });
+            bankAccountService.listCustomers().forEach(customer -> {
+                try {
+                    bankAccountService.saveCurrentBankAccount(customer.getId(), 9000, Math.random() * 90000);
+                    bankAccountService.saveSavingBankAccount(customer.getId(), 5.5, Math.random() * 120000);
+
+                } catch (CustomerNotFoundException e) {
+                    e.printStackTrace();
                 }
-                if(bankaccount2 instanceof CurrentAccount){
-                    System.out.println("OverDraft");
-                    System.out.println(((CurrentAccount) bankaccount2).getOverDraft());
+            });
+
+            List<BankAccount> bankAccounts = bankAccountService.bankAccountList();
+            for (BankAccount bankAccount:bankAccounts){
+                for (int i = 0; i <10 ; i++) {
+                    String accountId = bankAccount.getId();
+                    bankAccountService.credit(accountId,10000+Math.random()*120000);
+                    bankAccountService.debit(accountId,1000+Math.random()*9000);
                 }
-                System.out.println("****************************");
             }
 
+
         };
-
     }
-
 }
