@@ -1,5 +1,4 @@
 package com.example.digital_banking_backend.Entities;
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
