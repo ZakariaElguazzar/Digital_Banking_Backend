@@ -1,16 +1,14 @@
 package com.example.digital_banking_backend;
 
+import com.example.digital_banking_backend.DTOs.BankAccountDTO;
+import com.example.digital_banking_backend.DTOs.CurrentAccountDTO;
 import com.example.digital_banking_backend.DTOs.CustomerDTO;
-import com.example.digital_banking_backend.Entities.*;
+import com.example.digital_banking_backend.DTOs.SavingAccountDTO;
 import com.example.digital_banking_backend.Exceptions.CustomerNotFoundException;
-import com.example.digital_banking_backend.Repositories.BankAccountRepository;
-import com.example.digital_banking_backend.Repositories.CustomerRepository;
-import com.example.digital_banking_backend.Repositories.OperationRepository;
 import com.example.digital_banking_backend.Services.BankAccountService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 
 import java.util.List;
 import java.util.Random;
@@ -117,12 +115,20 @@ public class DigitalBankingBackendApplication {
                 }
             });
 
-            List<BankAccount> bankAccounts = bankAccountService.bankAccountList();
-            for (BankAccount bankAccount:bankAccounts){
+            List<BankAccountDTO> bankAccounts = bankAccountService.bankAccountList();
+            for (BankAccountDTO bankAccount:bankAccounts){
                 for (int i = 0; i <10 ; i++) {
-                    String accountId = bankAccount.getId();
+                    String accountId;
+                    if (bankAccount instanceof SavingAccountDTO savingAccountDTO) {
+                        accountId = savingAccountDTO.getId();
+
+                    } else {
+                        CurrentAccountDTO currentAccountDTO = (CurrentAccountDTO) bankAccount;
+                        accountId = currentAccountDTO.getId();
+                    }
                     bankAccountService.credit(accountId,10000+Math.random()*120000);
                     bankAccountService.debit(accountId,1000+Math.random()*9000);
+
                 }
             }
 
